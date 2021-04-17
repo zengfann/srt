@@ -3,9 +3,15 @@ from flask import request
 from .models import User
 from .serializers import user_schema
 from .exceptions import UserAlreadyExists, UserNotExists, PasswordIncorrect
+from app.decorators import with_user
 from mongoengine.errors import NotUniqueError, DoesNotExist
+from os import environ
+
+import jwt
 
 blueprint = Blueprint("auth", __name__)
+
+JWT_SECRET = environ["JWT_SECRET"]
 
 
 @blueprint.route("/signup", methods=("POST",))
@@ -32,6 +38,17 @@ def signin():
     except DoesNotExist:
         raise UserNotExists
     if user.password == login_user.password:
-        return {"message": "登录成功"}
+        token = jwt.encode({"username": user.username}, JWT_SECRET)
+        return {"message": "登录成功", "token": token}
     else:
         raise PasswordIncorrect
+
+
+@blueprint.route("/current_user", methods=("GET",))
+@with_user
+def signin(user):
+    """
+    获取当前登录用户
+    """
+    user = User.objects.get(username=user["username"])
+    return user_schema.dump(user)

@@ -1,4 +1,5 @@
 from app.exceptions import APIEception
+from werkzeug.exceptions import Unauthorized
 
 
 class UserAlreadyExists(APIEception):
@@ -11,3 +12,7 @@ class UserNotExists(APIEception):
 
 class PasswordIncorrect(APIEception):
     description = "密码错误"
+
+
+class UnauthorizedUser(Unauthorized):
+    description = "没有合法的用户权限"
