@@ -1,10 +1,36 @@
 # 南京农业大学 SRT 项目
 
-## 启动开发服务器
+## 开发流程
 
-```sh
-flask run
-```
+1. 下载依赖：
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+2. 下载数据库（MongoDB）
+
+    [下载链接](https://docs.mongodb.com/master/tutorial/install-mongodb-on-windows/)
+
+3. 在工程下新建`.env`文件：
+
+    内容如下，MONGODB_HOST会被flask读取用于连接数据库
+
+    ```
+    MONGODB_HOST=mongodb://127.0.0.1:27017/srt
+    ```
+
+4. 启动开发服务器（A or B）
+
+    A:在控制台下：
+
+    ```sh
+    export FLASK_APP=app
+    export FLASK_ENV=development
+    flask run
+    ```
+
+    B:在PyCharm中直接新建启动配置即可
 
 ## 开发准则
 
