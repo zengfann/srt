@@ -5,10 +5,12 @@ from traceback import format_list
 from marshmallow.exceptions import ValidationError
 from werkzeug.exceptions import HTTPException, InternalServerError
 from os import environ
+from pathlib import Path
 
-import sys
+import time
 
 from app import auth
+from app import core
 
 # 加载环境变量
 load_dotenv()
@@ -18,12 +20,14 @@ connect(host=environ["MONGODB_HOST"])
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__, root_path=Path(__file__).parent.parent)
 
     app.register_blueprint(auth.views.blueprint)
+    app.register_blueprint(core.views.blueprint)
 
     @app.route("/")
     def hello_world():
+        time.sleep()
         return {"message": "Hello, World!"}
 
     @app.errorhandler(Exception)
