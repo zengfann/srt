@@ -2,6 +2,7 @@ from flask import request
 from .auth.exceptions import UnauthorizedUser
 from os import getenv
 from jwt.exceptions import InvalidSignatureError, DecodeError
+from re import split
 
 import jwt
 
@@ -18,8 +19,13 @@ def with_user(f):
         if token is None:
             raise UnauthorizedUser
 
+        parsed = split(r"\s", token.strip())
+
+        if parsed[0] != "Bearer":
+            raise UnauthorizedUser
+
         try:
-            user = jwt.decode(token, JWT_SECRET, "HS256")
+            user = jwt.decode(parsed[1], JWT_SECRET, "HS256")
         except (InvalidSignatureError, DecodeError):
             # token 错误
             raise UnauthorizedUser
