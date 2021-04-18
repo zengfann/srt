@@ -14,11 +14,12 @@
 
 3. 在工程下新建`.env`文件：
 
-    内容如下，`MONGODB_HOST`会被flask读取用于连接数据库，`JWT_SECRET`用于JWT加密
+    内容如下，`MONGODB_HOST`会被flask读取用于连接数据库，`JWT_SECRET`用于JWT加密 `UPLOAD_FOLDER`用于上传图片存储
 
     ```
     MONGODB_HOST=mongodb://127.0.0.1:27017/srt
     JWT_SECRET=04d63553-4db7-4017-b5fd-32870ad71158
+    UPLOAD_FOLDER=upload
     ```
 
 4. 启动开发服务器（A or B）
