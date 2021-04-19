@@ -34,6 +34,17 @@
 
     B:在PyCharm中直接新建启动配置即可
 
+## 代码检查（`IMPORTANT`）
+
+安装`pre-commit`：
+
+```sh
+pip install pre-commit
+pre-commit install
+```
+
+每次提交代码pre-commit都会检查代码中的问题，例如变量命名，代码风格，多余的空格等。
+
 ## 开发准则
 
 1. 使用`from xxx import yyy`而不是`import xxx`
