@@ -1,5 +1,4 @@
-from flask import Blueprint, request, send_from_directory, send_file
-from marshmallow.fields import Method
+from flask import Blueprint, request, send_from_directory
 from app.decorators import with_user
 from os import path, getenv
 from uuid import uuid4
