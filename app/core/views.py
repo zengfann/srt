@@ -9,7 +9,7 @@ UPLOAD_FOLDER = getenv("UPLOAD_FOLDER")
 
 
 @blueprint.route("/image/upload", methods=("POST",))
-@with_user
+@with_user()
 def upload_image(user):
     """
     图片上传

@@ -39,16 +39,15 @@ def signin():
         raise UserNotExists
     if user.password == login_user.password:
         token = jwt.encode({"username": user.username}, JWT_SECRET)
-        return {"message": "登录成功", "token": token}
+        return {"message": "登录成功", "access_token": token}
     else:
         raise PasswordIncorrect
 
 
 @blueprint.route("/current_user", methods=("GET",))
-@with_user
+@with_user(detail=True)
 def get_current_user(user):
     """
     获取当前登录用户
     """
-    user = User.objects.get(username=user["username"])
     return user_schema.dump(user)
