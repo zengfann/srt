@@ -1,4 +1,5 @@
-from flask import Blueprint, request, send_from_directory
+from flask import Blueprint, request, send_from_directory, send_file
+from marshmallow.fields import Method
 from app.decorators import with_user
 from os import path, getenv
 from uuid import uuid4
@@ -26,3 +27,7 @@ def images(id):
     显示用户上传的图片
     """
     return send_from_directory(UPLOAD_FOLDER, str(id), mimetype="image/jpg")
+
+
+#
+# @blueprint.route("/image/train", methods=("POST",))
