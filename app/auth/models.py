@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, ReferenceField
+from mongoengine import Document, StringField
 
 
 class User(Document):

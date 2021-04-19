@@ -1,0 +1,10 @@
+[flake8]
+exclude =
+    .DS_Store
+    .direnv
+    *.pyc
+    __pycache__/
+    .idea
+    .env
+    .vscode
+    upload

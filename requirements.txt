@@ -3,4 +3,8 @@ python-dotenv
 flask
 PyJWT
 marshmallow
+
+# 开发依赖
 black
+flake8
+pep8-naming

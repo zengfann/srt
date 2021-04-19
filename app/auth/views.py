@@ -46,7 +46,7 @@ def signin():
 
 @blueprint.route("/current_user", methods=("GET",))
 @with_user
-def signin(user):
+def get_current_user(user):
     """
     获取当前登录用户
     """

@@ -1,6 +1,5 @@
 from marshmallow import Schema, fields
 from app.auth.serializers import UserSerializer
-from .models import Image
 
 
 class ImageSerializer(Schema):

@@ -1,13 +1,10 @@
-from flask import Flask, json, Response
+from flask import Flask, json
 from dotenv import load_dotenv
 from mongoengine import connect
-from traceback import format_list
 from marshmallow.exceptions import ValidationError
 from werkzeug.exceptions import HTTPException, InternalServerError
 from os import environ
 from pathlib import Path
-
-import time
 
 from app import auth
 from app import core
@@ -27,7 +24,6 @@ def create_app():
 
     @app.route("/")
     def hello_world():
-        time.sleep()
         return {"message": "Hello, World!"}
 
     @app.errorhandler(Exception)
