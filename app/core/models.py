@@ -1,4 +1,5 @@
 from mongoengine import Document, StringField, ReferenceField, FileField
+from typing_extensions import Required
 from app.auth.models import User
 
 
@@ -10,3 +11,12 @@ class Image(Document):
     type = StringField(required=True)
     tag = StringField(required=True)
     user = ReferenceField(User, required=True)
+class TestImage(Document):
+    """
+    强化后测试集的图片：
+    处理类型、病害种类
+    """
+    type = StringField(required=True)  #图片是train or test 集
+    operate =StringField(Required=True)  # test集选择哪种强化处理
+    tag = StringField(required=True)     #病害的种类
+    user = ReferenceField(User, required=True)   
