@@ -43,7 +43,13 @@ pip install pre-commit
 pre-commit install
 ```
 
-每次提交代码pre-commit都会检查代码中的问题，例如变量命名，代码风格，多余的空格等。
+每次提交代码pre-commit都会检查代码中的问题，例如变量命名，代码风格，多余的空格等，如果编码存在问题将不能commit代码，修复代码中的问题后再次提交即可。
+
+如果想在不commit代码的情况下检查代码中存在的问题运行以下命令：
+
+```sh
+pre-commit run --all-files
+```
 
 ## 开发准则
 
