@@ -13,6 +13,17 @@ class Image(Document):
     user = ReferenceField(User, required=True)
 
 
+class TrainImage(Document):
+    """
+    训练集图片信息
+    病害的种类
+    """
+
+    type = StringField(required=True)  # 图片是train or test 集
+    tag = StringField(required=True)  # 病害的种类
+    user = ReferenceField(User, required=True)
+
+
 class TestImage(Document):
     """
     强化后测试集的图片：

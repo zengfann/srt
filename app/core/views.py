@@ -2,6 +2,7 @@ from flask import Blueprint, request, send_from_directory
 from app.decorators import with_user
 from os import path, getenv
 from uuid import uuid4
+from .serializers import image_schema
 
 blueprint = Blueprint("core", __name__)
 
@@ -28,5 +29,13 @@ def images(id):
     return send_from_directory(UPLOAD_FOLDER, str(id), mimetype="image/jpg")
 
 
-#
-# @blueprint.route("/image/train", methods=("POST",))
+@blueprint.route("/train", methods=("POST",))
+@with_user()
+def train_sort(user):
+    """
+    识别训练模型image
+    """
+
+    train_image = image_schema.load(request.get_json())
+    train_image.save()
+    return image_schema.dump(train_image)
