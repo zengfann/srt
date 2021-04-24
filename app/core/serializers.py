@@ -1,17 +1,17 @@
-from app.core.models import TrainImage
+from app.core.models import Image
 from marshmallow import Schema, fields
 from marshmallow.decorators import post_load
-from app.auth.serializers import UserSerializer
 
 
 class ImageSerializer(Schema):
-    type = fields.Str(required=True)
+    image_type = fields.Str(required=True)
+    operate = fields.Int(required=True)
     tag = fields.Str(required=True)
-    user = fields.Nested(UserSerializer, dump_only=True)
+    image_uuid = fields.UUID(required=True)
 
     @post_load
-    def make_user(self, data, **kwargs):
-        return TrainImage(**data)
+    def make_image(self, data, **kwargs):
+        return Image(**data)
 
 
 image_schema = ImageSerializer()

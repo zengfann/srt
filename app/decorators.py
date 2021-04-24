@@ -4,6 +4,7 @@ from os import getenv
 from jwt.exceptions import InvalidSignatureError, DecodeError
 from re import split
 from app.auth.models import User
+from functools import wraps
 
 import jwt
 
@@ -22,6 +23,7 @@ def with_user(detail=False):
     """
 
     def decorator(f):
+        @wraps(f)
         def wrapper(*args, **kwargs):
             token = request.headers.get("Authorization")
             if token is None:

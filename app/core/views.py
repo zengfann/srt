@@ -29,13 +29,11 @@ def images(id):
     return send_from_directory(UPLOAD_FOLDER, str(id), mimetype="image/jpg")
 
 
-@blueprint.route("/train", methods=("POST",))
-@with_user()
-def train_sort(user):
-    """
-    识别训练模型image
-    """
+@blueprint.route("/images/train/upload", methods=("POST",))
+@with_user(detail=True)
+def upload_train_image(user):
+    image = image_schema.load(request.get_json())
+    image.user = user
+    image.save()
 
-    train_image = image_schema.load(request.get_json())
-    train_image.save()
-    return image_schema.dump(train_image)
+    return image_schema.dump(image)
