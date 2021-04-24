@@ -4,9 +4,10 @@ from marshmallow.decorators import post_load
 
 
 class ImageSerializer(Schema):
+    id = fields.Str(required=True, dump_only=True)
     image_type = fields.Str(required=True)
     operate = fields.Int(required=True)
-    tag = fields.Str(required=True)
+    tag = fields.Int(required=True)
     image_uuid = fields.UUID(required=True)
 
     @post_load

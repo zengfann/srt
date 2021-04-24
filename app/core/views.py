@@ -2,7 +2,9 @@ from flask import Blueprint, request, send_from_directory
 from app.decorators import with_user
 from os import path, getenv
 from uuid import uuid4
-from .serializers import image_schema
+from .serializers import image_schema, images_schema
+from .models import Image
+from .exceptions import NotOwnerException
 
 blueprint = Blueprint("core", __name__)
 
@@ -37,3 +39,29 @@ def upload_train_image(user):
     image.save()
 
     return image_schema.dump(image)
+
+
+@blueprint.route("/images/train/<tag>", methods=("GET",))
+@with_user(detail=True)
+def display_train_image(user, tag):
+    images = Image.objects(user=user, image_type="train", tag=tag)
+
+    return {"result": images_schema.dump(images)}
+
+
+@blueprint.route("/images/test/<int:tag>", methods=("GET",))
+@with_user(detail=True)
+def display_test_image(user, tag):
+    images = Image.objects(user=user, image_type="test", tag=tag)
+
+    return {"result": images_schema.dump(images)}
+
+
+@blueprint.route("/images/delete/<id>", methods=("DELETE",))
+@with_user(detail=True)
+def delete_images(user, id):
+    delete_image = Image.objects.get(id=id)
+    if delete_image.user != user:
+        raise NotOwnerException
+    delete_image.delete()
+    return {"result": "删除成功"}

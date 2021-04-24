@@ -10,6 +10,6 @@ class Image(Document):
 
     image_type = StringField(required=True)  # 图片是train or test 集
     operate = IntField(required=True)  # test集选择哪种强化处理
-    tag = StringField(required=True)  # 病害的种类
+    tag = IntField(required=True)  # 病害的种类
     user = ReferenceField(User, required=True)
     image_uuid = UUIDField(required=True)  # 上传到目录的文件名
