@@ -4,7 +4,7 @@ flask
 PyJWT
 marshmallow
 
-# 开发依赖
+# dev deps
 black
 flake8
 pep8-naming
