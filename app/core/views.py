@@ -1,3 +1,4 @@
+from math import ceil
 from flask import Blueprint, request, send_from_directory
 from app.decorators import with_user
 from os import path, getenv
@@ -52,9 +53,22 @@ def display_train_image(user, tag):
 @blueprint.route("/images/test/<int:tag>", methods=("GET",))
 @with_user(detail=True)
 def display_test_image(user, tag):
+    page = request.args.get("page")
+    page_size = request.args.get("page_size")
+    if page is None:
+        page = 1
+    if page_size is None:
+        page_size = 2
+    page = int(page)
+    page_size = int(page_size)
     images = Image.objects(user=user, image_type="test", tag=tag)
-
-    return {"result": images_schema.dump(images)}
+    count = images.count()
+    images = images[(page - 1) * page_size : page * page_size]
+    return {
+        "result": images_schema.dump(images),
+        "pages": ceil(count / page_size),
+        "current_page": page,
+    }
 
 
 @blueprint.route("/images/delete/<id>", methods=("DELETE",))
