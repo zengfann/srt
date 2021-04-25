@@ -34,6 +34,13 @@
 
     B:在PyCharm中直接新建启动配置即可
 
+5. 创建训练集文件夹 `train_data`文件夹
+    配置如下，在`.env`文件下配置`TRAIN_FOLDER`文件路径
+    需要在srt文件下手动创建如下文件夹
+    `train_data`文件内容：
+    `identify` ：文件为识别病害训练集文件夹(`0`,`1`...为病害种类文件夹)
+    `mask`: 为病斑分割训练集 `git`:为上级下的手动分割病斑图 `image` 为同级相应的图片集 
+
 ## 代码检查（`IMPORTANT`）
 
 安装`pre-commit`：

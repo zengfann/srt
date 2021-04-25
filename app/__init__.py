@@ -5,6 +5,7 @@ from marshmallow.exceptions import ValidationError
 from werkzeug.exceptions import HTTPException, InternalServerError
 from os import environ
 from pathlib import Path
+from traceback import print_exc
 
 from app import auth
 from app import core
@@ -28,6 +29,7 @@ def create_app():
 
     @app.errorhandler(Exception)
     def handle_exception(e):
+        print_exc(e)
         return {
             "code": 500,
             "message": repr(e),
