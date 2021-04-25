@@ -5,7 +5,8 @@ from os import path, getenv
 from uuid import uuid4
 from .serializers import image_schema, images_schema
 from .models import Image
-from .exceptions import NotOwnerException
+from .exceptions import NotOwnerException, ImageDoesntExist
+from os.path import isfile
 
 blueprint = Blueprint("core", __name__)
 
@@ -35,10 +36,15 @@ def images(id):
 @blueprint.route("/images/train/upload", methods=("POST",))
 @with_user(detail=True)
 def upload_train_image(user):
+    """
+    上传用户样本图片
+    """
     image = image_schema.load(request.get_json())
+    id = image.image_uuid
+    if not isfile(path.join(UPLOAD_FOLDER, str(id))):
+        raise ImageDoesntExist(id)
     image.user = user
     image.save()
-
     return image_schema.dump(image)
 
 
