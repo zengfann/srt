@@ -118,4 +118,4 @@ def train_images_copy(user):
                     TRAIN_FOLDER, "identify", str(tag), str(image.image_uuid) + ".jpg"
                 ),
             )
-    return "ddadad"
+    return "复制成功"
