@@ -7,7 +7,7 @@ from .serializers import image_schema, images_schema
 from .models import Image
 from .exceptions import NotOwnerException, ImageDoesntExist
 from os.path import isfile
-from shutil import copyfile
+from app.util.train_manager import manager
 
 blueprint = Blueprint("core", __name__)
 
@@ -106,16 +106,26 @@ def delete_images(user, id):
 @blueprint.route("/start_train", methods=("POST",))
 @with_user(detail=True)
 def train_images_copy(user):
-
-    for tag in range(0, 10):
-        images = Image.objects(user=user, image_type="train", tag=tag)
-        for image in images:
-            image_path = path.join(UPLOAD_FOLDER, str(image.image_uuid))
-            print(image_path)
-            copyfile(
-                image_path,
-                path.join(
-                    TRAIN_FOLDER, "identify", str(tag), str(image.image_uuid) + ".jpg"
-                ),
-            )
+    manager.train(user)
+    # for tag in range(0, 10):
+    #     images = Image.objects(user=user, image_type="train", tag=tag)
+    #     for image in images:
+    #         image_path = path.join(UPLOAD_FOLDER, str(image.image_uuid))
+    #         print(image_path)
+    #         copyfile(
+    #             image_path,
+    #             path.join(
+    #                 TRAIN_FOLDER, "identify", str(tag), str(image.image_uuid) + ".jpg"
+    #             ),
+    #         )
     return "复制成功"
+
+
+@blueprint.route("/train_status", methods=("GET",))
+@with_user(detail=True)
+def get_current_train_status(user):
+    current_user = manager.get_current_user()
+    if user == current_user:
+        return {"logs": manager.get_logs()}
+    else:
+        return {"error": "当前没有训练任务"}, 400
