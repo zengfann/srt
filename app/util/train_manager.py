@@ -1,8 +1,9 @@
 from app.core.models import Image
-from os import getenv, path
-from shutil import copyfile
+from os import getenv, path, unlink, listdir
+from shutil import copyfile, rmtree
 from threading import Thread
 from time import sleep
+from pathlib import Path
 
 
 UPLOAD_FOLDER = getenv("UPLOAD_FOLDER")
@@ -26,7 +27,7 @@ class TrainManager:
             images = Image.objects(user=user, image_type="train", tag=tag)
             for image in images:
                 image_path = path.join(UPLOAD_FOLDER, str(image.image_uuid))
-                print(image_path)
+                self.log("copy..." + image_path)
                 copyfile(
                     image_path,
                     path.join(
@@ -37,6 +38,27 @@ class TrainManager:
                     ),
                 )
 
+    def reset_train_folder(self):
+        # 重建当前训练目录, 该操作会删除之前所有样本数据
+        files = listdir(TRAIN_FOLDER)
+        for f in files:
+            p = path.join(TRAIN_FOLDER, f)
+            if path.isdir(p):
+                rmtree(p)
+            elif path.isfile(p):
+                unlink(p)
+
+        for i in range(8):
+            Path(TRAIN_FOLDER, "mask", "gt", str(i)).mkdir(parents=True, exist_ok=True)
+
+        for i in range(8):
+            Path(TRAIN_FOLDER, "mask", "image", str(i)).mkdir(
+                parents=True, exist_ok=True
+            )
+
+        for i in range(10):
+            Path(TRAIN_FOLDER, "identify", str(i)).mkdir(parents=True, exist_ok=True)
+
     def train(self, user):
         """
         开始训练
@@ -44,8 +66,10 @@ class TrainManager:
         if not self.training:
             self.training = True
             self.current_user = user
+            # 重建训练目录
+            self.reset_train_folder()
             # 拷贝该用户的训练集
-            # self.copy_samples(user)
+            self.copy_samples(user)
             self.train_thread = Thread(target=self.do_train)
             self.train_thread.start()
         else:
@@ -59,6 +83,7 @@ class TrainManager:
         self.logs = []
         self.train_thread = None
         self.current_user = None
+        self.reset_train_folder()
         print("训练结束")
 
     def log(self, s):
