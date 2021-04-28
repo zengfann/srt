@@ -1,12 +1,14 @@
-from flask import request
-from .auth.exceptions import UnauthorizedUser
-from os import getenv
-from jwt.exceptions import InvalidSignatureError, DecodeError
-from re import split
-from app.auth.models import User
 from functools import wraps
+from os import getenv
+from re import split
 
 import jwt
+from flask import request
+from jwt.exceptions import DecodeError, InvalidSignatureError
+
+from app.auth.models import User
+
+from .auth.exceptions import UnauthorizedUser
 
 JWT_SECRET = getenv("JWT_SECRET")
 

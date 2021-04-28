@@ -1,13 +1,16 @@
 from math import ceil
-from flask import Blueprint, request, send_from_directory
-from app.decorators import with_user
-from os import path, getenv
-from uuid import uuid4
-from .serializers import image_schema, images_schema
-from .models import Image
-from .exceptions import NotOwnerException, ImageDoesntExist
+from os import getenv, path
 from os.path import isfile
+from uuid import uuid4
+
+from flask import Blueprint, request, send_from_directory
+
+from app.decorators import with_user
 from app.util.train_manager import manager
+
+from .exceptions import ImageDoesntExist, NotOwnerException
+from .models import Image
+from .serializers import image_schema, images_schema
 
 blueprint = Blueprint("core", __name__)
 

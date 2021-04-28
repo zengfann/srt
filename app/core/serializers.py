@@ -1,6 +1,7 @@
-from app.core.models import Image
 from marshmallow import Schema, fields
 from marshmallow.decorators import post_load
+
+from app.core.models import Image
 
 
 class ImageSerializer(Schema):

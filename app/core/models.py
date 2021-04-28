@@ -1,4 +1,11 @@
-from mongoengine import Document, StringField, ReferenceField, IntField, UUIDField
+from mongoengine import (
+    Document,
+    IntField,
+    ReferenceField,
+    StringField,
+    UUIDField,
+)
+
 from app.auth.models import User
 
 

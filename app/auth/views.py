@@ -1,13 +1,14 @@
-from flask import Blueprint
-from flask import request
-from .models import User
-from .serializers import user_schema
-from .exceptions import UserAlreadyExists, UserNotExists, PasswordIncorrect
-from app.decorators import with_user
-from mongoengine.errors import NotUniqueError, DoesNotExist
 from os import environ
 
 import jwt
+from flask import Blueprint, request
+from mongoengine.errors import DoesNotExist, NotUniqueError
+
+from app.decorators import with_user
+
+from .exceptions import PasswordIncorrect, UserAlreadyExists, UserNotExists
+from .models import User
+from .serializers import user_schema
 
 blueprint = Blueprint("auth", __name__)
 

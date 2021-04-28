@@ -1,14 +1,13 @@
-from flask import Flask, json
-from dotenv import load_dotenv
-from mongoengine import connect
-from marshmallow.exceptions import ValidationError
-from werkzeug.exceptions import HTTPException, InternalServerError
 from os import environ
 from pathlib import Path
-from traceback import print_exc
 
-from app import auth
-from app import core
+from dotenv import load_dotenv
+from flask import Flask, json
+from marshmallow.exceptions import ValidationError
+from mongoengine import connect
+from werkzeug.exceptions import HTTPException
+
+from app import auth, core
 
 # 加载环境变量
 load_dotenv()
@@ -26,15 +25,6 @@ def create_app():
     @app.route("/")
     def hello_world():
         return {"message": "Hello, World!"}
-
-    @app.errorhandler(Exception)
-    def handle_exception(e):
-        print_exc(e)
-        return {
-            "code": 500,
-            "message": repr(e),
-            "descripton": InternalServerError.description,
-        }, 500
 
     @app.errorhandler(HTTPException)
     def handle_http_exception(e):

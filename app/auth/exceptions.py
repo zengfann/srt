@@ -1,5 +1,6 @@
-from app.exceptions import APIEception
 from werkzeug.exceptions import Unauthorized
+
+from app.exceptions import APIEception
 
 
 class UserAlreadyExists(APIEception):

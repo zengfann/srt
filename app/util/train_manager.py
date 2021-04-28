@@ -1,10 +1,10 @@
-from app.core.models import Image
-from os import getenv, path, unlink, listdir
+from os import getenv, listdir, path, unlink
+from pathlib import Path
 from shutil import copyfile, rmtree
 from threading import Thread
 from time import sleep
-from pathlib import Path
 
+from app.core.models import Image
 
 UPLOAD_FOLDER = getenv("UPLOAD_FOLDER")
 TRAIN_FOLDER = getenv("TRAIN_FOLDER")
