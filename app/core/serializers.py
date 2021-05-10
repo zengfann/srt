@@ -10,6 +10,8 @@ class ImageSerializer(Schema):
     operate = fields.Int(required=True)
     tag = fields.Int(required=True)
     image_uuid = fields.UUID(required=True)
+    train_type = fields.Str(required=True)
+    mask_type = fields.Str(required=True)
 
     @post_load
     def make_image(self, data, **kwargs):

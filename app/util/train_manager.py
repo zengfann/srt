@@ -1,10 +1,10 @@
-from os import getenv, listdir, path, unlink
-from pathlib import Path
+from app.core.models import Image
+from os import getenv, path, unlink, listdir
 from shutil import copyfile, rmtree
 from threading import Thread
 from time import sleep
+from pathlib import Path
 
-from app.core.models import Image
 
 UPLOAD_FOLDER = getenv("UPLOAD_FOLDER")
 TRAIN_FOLDER = getenv("TRAIN_FOLDER")
@@ -66,7 +66,7 @@ class TrainManager:
         if not self.training:
             self.training = True
             self.current_user = user
-            # 重建训练目录
+            #  重建训练目录
             self.reset_train_folder()
             # 拷贝该用户的训练集
             self.copy_samples(user)
