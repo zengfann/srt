@@ -18,7 +18,20 @@ JWT_SECRET = environ["JWT_SECRET"]
 @blueprint.route("/signup", methods=("POST",))
 def signup():
     """
-    用户注册
+    一般用户注册(专家与普通用户)
+    """
+    user = user_schema.load(request.get_json())
+    try:
+        user.save()
+    except NotUniqueError:
+        raise UserAlreadyExists
+    return user_schema.dump(user)
+
+
+@blueprint.route("/A_signup", methods=("POST",))
+def a_signup():
+    """
+    管理员用户注册
     """
     user = user_schema.load(request.get_json())
     try:
@@ -33,7 +46,10 @@ def signin():
     """
     用户登录
     """
-    login_user = user_schema.load(request.get_json())
+    login_user = user_schema.load(
+        request.get_json(),
+        partial=("user_type",),
+    )
     try:
         user = User.objects.get(username=login_user.username)
     except DoesNotExist:
