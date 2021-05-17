@@ -35,7 +35,7 @@ class Dataset(Document):
 
     type = StringField(Required=True)  # 是识别还是病斑数据集
     name = StringField(Required=True)  # 植物的种类
-    creater = ReferenceField(User)  # 数据集的创始人
+    creater = ReferenceField(User, Required=True)  # 数据集的创始人
     labels = DictField(Required=True)  # 种类的数据集字典
     managers = List(ObjectIdField)  # 管理人员
 
