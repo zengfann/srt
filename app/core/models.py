@@ -21,10 +21,10 @@ class Dataset(Document):
     name = StringField(required=True)
     creator = ReferenceField(User, required=True)
     labels = ListField(DictField(), required=True)
-    managers = ListField(ReferenceField(User), default=[])
+    managers = ListField(LazyReferenceField(User), default=[])
 
-    def can_check(self, user_id):
-        return user_id == self.creator.id
+    def can_check(self, user):
+        return user.id == self.creator.id or user in self.managers
 
     def get_label(self, label_id):
         for label in self.labels:

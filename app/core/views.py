@@ -6,6 +6,8 @@ from mongoengine.errors import NotUniqueError
 from shortuuid import uuid as suuid
 from werkzeug.utils import secure_filename
 
+from app.auth.exceptions import UserNotExists
+from app.auth.models import User
 from app.decorators import with_user
 from app.util.labels import validate_labels
 from app.util.utils import file_exist
@@ -15,9 +17,18 @@ from .exceptions import (
     FileDoesntExistException,
     LabelException,
     SampleAlreadyExist,
+    NotOwnerException,
+    SampleDoesntExist,
+    NotManagerException,
 )
 from .models import Dataset, Sample
-from .serializers import dataset_schema, datasets_schema, sample_schema
+from .serializers import (
+    dataset_schema,
+    datasets_schema,
+    sample_schema,
+    samples_schema,
+    add_manager_dto_schema,
+)
 
 blueprint = Blueprint("core", __name__)
 
@@ -63,6 +74,34 @@ def create_dataset(user):
     return dataset_schema.dump(dataset)
 
 
+@blueprint.route("/datasets/<objectid:id>/managers", methods=("PUT",))
+@with_user(detail=True)
+def add_managers(id, user):
+    """
+    添加管理员
+    """
+    add_manager_dto = add_manager_dto_schema.load(request.get_json())
+    dataset = Dataset.objects.filter(id=id).first()
+    if dataset is None:
+        raise DatasetDoesntExist(id)
+
+    if dataset.creator.id != user.id:
+        # 不是自己的数据集不能添加管理员
+        raise NotOwnerException
+
+    manager = User.objects.filter(username=add_manager_dto["username"]).first()
+
+    if manager is None:
+        raise UserNotExists
+
+    else:
+        if dataset.creator.id != manager.id and manager not in dataset.managers:
+            dataset.managers.append(manager)
+
+    dataset.save()
+    return dataset_schema.dump(dataset)
+
+
 @blueprint.route("/datasets/<objectid:id>", methods=("GET",))
 def get_dataset(id):
     dataset = Dataset.objects.filter(id=id).first()
@@ -79,7 +118,7 @@ def create_sample(id, user):
         raise DatasetDoesntExist(id)
     sample = sample_schema.load(request.get_json())
     sample.dataset = dataset
-    sample.checked = True if dataset.can_check(user.id) else False
+    sample.checked = True if dataset.can_check(user) else False
     is_valid, help_text = validate_labels(sample, dataset)
     if not is_valid:
         raise LabelException(help_text)
@@ -98,4 +137,57 @@ def get_samples(id):
     dataset = Dataset.objects.filter(id=id).first()
     if dataset is None:
         raise DatasetDoesntExist(id)
-    Sample.objects.filter(checked=True)
+    samples = Sample.objects.filter(checked=True, dataset=dataset)
+    return {"results": samples_schema.dump(samples)}
+
+
+@blueprint.route(
+    "/datasets/<objectid:dataset_id>/samples/<objectid:sample_id>", methods=("DELETE",)
+)
+@with_user(detail=True)
+def delete_sample(dataset_id, sample_id, user):
+    """
+    删除样本
+    """
+
+    dataset = Dataset.objects.filter(id=dataset_id).first()
+    if dataset is None:
+        raise DatasetDoesntExist(id)
+    sample = Sample.objects.filter(id=sample_id, dataset=dataset).first()
+
+    if sample is None:
+        # 样本不存在
+        raise SampleDoesntExist(sample_id)
+
+    if dataset.can_check(user):
+        sample.delete()
+    else:
+        raise NotManagerException
+
+    return {"message": "删除成功", "deleted_sample": sample_schema.dump(sample)}
+
+
+@blueprint.route(
+    "/datasets/<objectid:dataset_id>/samples/<objectid:sample_id>/checked",
+    methods=("PUT",),
+)
+@with_user(detail=True)
+def check_sample(dataset_id, sample_id, user):
+    dataset = Dataset.objects.filter(id=dataset_id).first()
+
+    if dataset is None:
+        raise DatasetDoesntExist(dataset_id)
+
+    sample = Sample.objects.filter(id=sample_id, dataset=dataset).first()
+
+    if sample is None:
+        # 样本不存在
+        raise SampleDoesntExist(sample_id)
+
+    if dataset.can_check(user):
+        sample.checked = True
+        sample.save()
+    else:
+        raise NotManagerException
+
+    return sample_schema.dump(sample)

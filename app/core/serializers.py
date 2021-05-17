@@ -56,7 +56,7 @@ class DatasetSerializer(Schema):
     creator = fields.Nested(UserSerializer, required=True, dump_only=True)
     labels = fields.List(fields.Nested(LabelSerializer), required=True)
     # 创建时不需要指定管理员
-    managers = fields.List(fields.String(), required=True, dump_only=True)
+    managers = fields.List(LazyReferenceSerializer(), required=True, dump_only=True)
 
     @post_load
     def make_dataset(self, data, **kwargs):
@@ -68,6 +68,7 @@ class SampleSerializer(Schema):
     样本模型序列化器
     """
 
+    id = fields.String(dump_only=True)
     dataset = LazyReferenceSerializer(dump_only=True)
     labels = fields.Mapping(fields.String(), None, required=True)
     # 创建时不需要指定是否过审
@@ -79,8 +80,14 @@ class SampleSerializer(Schema):
         return Sample(**data)
 
 
+class AddManagerDtoSerializer(Schema):
+    username = fields.String(required=True)
+
+
 dataset_schema = DatasetSerializer()
 datasets_schema = DatasetSerializer(many=True)
 
 sample_schema = SampleSerializer()
 samples_schema = SampleSerializer(many=True)
+
+add_manager_dto_schema = AddManagerDtoSerializer()

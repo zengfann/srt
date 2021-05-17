@@ -18,7 +18,7 @@ def validate_labels(sample, dataset):
                 )
 
         elif label_type == "number":
-            if type(value) is not (int or float):
+            if not (type(value) is int or type(value) is float):
                 return False, "标签(%s)应当是数值类型" % label_id
 
             if "min_num" in label and value < label["min_num"]:
