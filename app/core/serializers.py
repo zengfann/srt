@@ -53,6 +53,8 @@ class DatasetSerializer(Schema):
 
     id = fields.String(dump_only=True)
     name = fields.String(required=True)
+    description = fields.String(required=True)
+    date = fields.DateTime()
     creator = fields.Nested(UserSerializer, required=True, dump_only=True)
     labels = fields.List(fields.Nested(LabelSerializer), required=True)
     # 创建时不需要指定管理员

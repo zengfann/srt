@@ -1,6 +1,8 @@
 from copy import deepcopy
 
 from mongoengine import (
+    CASCADE,
+    DateTimeField,
     DictField,
     Document,
     LazyReferenceField,
@@ -19,6 +21,8 @@ class Dataset(Document):
     """
 
     name = StringField(required=True)
+    description = StringField(required=True)
+    date = DateTimeField(required=True)
     creator = ReferenceField(User, required=True)
     labels = ListField(DictField(), required=True)
     managers = ListField(LazyReferenceField(User), default=[])
@@ -32,13 +36,16 @@ class Dataset(Document):
                 return deepcopy(label)
         return None
 
+    def get_label_ids(self):
+        return set(map(lambda x: x["label_id"], self.labels))
+
 
 class Sample(Document):
     """
     样本模型
     """
 
-    dataset = LazyReferenceField(Dataset, required=True)
+    dataset = LazyReferenceField(Dataset, required=True, reverse_delete_rule=CASCADE)
     labels = DictField(required=True)
     checked = BooleanField(required=True)
     file = StringField(required=True, unique=True)

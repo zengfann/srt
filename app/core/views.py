@@ -1,3 +1,4 @@
+from datetime import datetime
 from os import getenv, path
 from uuid import uuid4
 
@@ -16,18 +17,18 @@ from .exceptions import (
     DatasetDoesntExist,
     FileDoesntExistException,
     LabelException,
-    SampleAlreadyExist,
-    NotOwnerException,
-    SampleDoesntExist,
     NotManagerException,
+    NotOwnerException,
+    SampleAlreadyExist,
+    SampleDoesntExist,
 )
 from .models import Dataset, Sample
 from .serializers import (
+    DatasetSerializer,
+    add_manager_dto_schema,
     dataset_schema,
-    datasets_schema,
     sample_schema,
     samples_schema,
-    add_manager_dto_schema,
 )
 
 blueprint = Blueprint("core", __name__)
@@ -55,8 +56,25 @@ def static_files(filename):
 
 @blueprint.route("/datasets", methods=("GET",))
 def get_datasets():
-    datasets = Dataset.objects.all()
-    return {"results": datasets_schema.dump(datasets)}
+    """
+    列出所有数据集
+    """
+    # 隐藏 labels 信息
+    username = request.args.get("user")
+    datasets = Dataset.objects.exclude("labels", "managers").all()
+
+    if username is not None:
+        user = User.objects.filter(username=username).first()
+        if user is not None:
+            datasets = datasets.filter(creator=user)
+        else:
+            datasets = []
+
+    return {
+        "results": DatasetSerializer(exclude=["labels", "managers"], many=True).dump(
+            datasets
+        )
+    }
 
 
 @blueprint.route("/datasets", methods=("POST",))
@@ -68,6 +86,7 @@ def create_dataset(user):
     dataset = dataset_schema.load(request.get_json())
     dataset.creator = user
     dataset.managers = []
+    dataset.date = datetime.now()
     for label in dataset.labels:
         label["label_id"] = suuid()
     dataset.save()
@@ -134,10 +153,27 @@ def create_sample(id, user):
 
 @blueprint.route("/datasets/<objectid:id>/samples", methods=("GET",))
 def get_samples(id):
+    """
+    获取样本
+    """
     dataset = Dataset.objects.filter(id=id).first()
+
     if dataset is None:
         raise DatasetDoesntExist(id)
+
     samples = Sample.objects.filter(checked=True, dataset=dataset)
+
+    # 目前仅支持枚举筛选
+    for label_id in dataset.get_label_ids():
+        label_query = request.args.get(label_id)
+
+        if label_query is None:
+            continue
+
+        label = dataset.get_label(label_id)
+        if label["type"] == "enum":
+            samples = samples.filter(**{f"labels__{label_id}": label_query})
+
     return {"results": samples_schema.dump(samples)}
 
 
@@ -173,6 +209,9 @@ def delete_sample(dataset_id, sample_id, user):
 )
 @with_user(detail=True)
 def check_sample(dataset_id, sample_id, user):
+    """
+    审核样本
+    """
     dataset = Dataset.objects.filter(id=dataset_id).first()
 
     if dataset is None:
