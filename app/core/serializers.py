@@ -1,13 +1,21 @@
-from app.core.models import Dataset
 from marshmallow import Schema, fields
-
 from marshmallow.decorators import post_load
 from marshmallow_oneofschema import OneOfSchema
+
 from app.auth.serializers import UserSerializer
+from app.core.models import Dataset, Sample
+
+
+class LazyReferenceSerializer(fields.Field):
+    def _serialize(self, value, attr, obj, **kwargs):
+        return str(value.id)
 
 
 class EnumLabelSerializer(Schema):
-    name = fields.String(required=True)
+    label_id = fields.String(
+        dump_only=True,
+    )
+    label_name = fields.String(required=True)
     description = fields.String(required=True)
     values = fields.List(fields.String(), required=True)
 
@@ -18,7 +26,8 @@ class EnumLabelSerializer(Schema):
 
 
 class NumberLabelSerializer(Schema):
-    name = fields.String(required=True)
+    label_id = fields.String(dump_only=True)
+    label_name = fields.String(required=True)
     description = fields.String(required=True)
     min_num = fields.Number()
     max_num = fields.Number()
@@ -59,10 +68,15 @@ class SampleSerializer(Schema):
     样本模型序列化器
     """
 
-    dataset = fields.Nested(DatasetSerializer, required=True)
-    labels = fields.Dict(required=True)
-    checked = fields.Boolean(required=True)
+    dataset = LazyReferenceSerializer(dump_only=True)
+    labels = fields.Mapping(fields.String(), None, required=True)
+    # 创建时不需要指定是否过审
+    checked = fields.Boolean(dump_only=True)
     file = fields.String(required=True)
+
+    @post_load
+    def make_sample(self, data, **kwargs):
+        return Sample(**data)
 
 
 dataset_schema = DatasetSerializer()

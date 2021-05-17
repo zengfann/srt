@@ -8,6 +8,7 @@ from mongoengine import connect
 from werkzeug.exceptions import HTTPException
 
 from app import auth, core
+from app.util.converters import ObjectIDConverter
 
 # 加载环境变量
 load_dotenv()
@@ -18,6 +19,7 @@ connect(host=environ["MONGODB_HOST"])
 
 def create_app():
     app = Flask(__name__, root_path=Path(__file__).parent.parent)
+    app.url_map.converters["objectid"] = ObjectIDConverter
 
     app.register_blueprint(auth.views.blueprint)
     app.register_blueprint(core.views.blueprint)

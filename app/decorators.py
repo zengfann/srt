@@ -45,7 +45,7 @@ def with_user(detail=False):
             if detail:
                 user = User.objects.get(username=user["username"])
 
-            return f(user, *args, **kwargs)
+            return f(*args, **kwargs, **{"user": user})
 
         return wrapper
 

@@ -6,10 +6,29 @@ class NotOwnerException(APIEception):
     description = "没有该照片的权限"
 
 
-class ImageDoesntExist(APIEception):
+class DatasetDoesntExist(APIEception):
     code = 404
-    description = "没这个图片草泥马"
 
     def __init__(self, id):
-        self.description = "图片(%s)不存在,草泥马" % (id)
-        HTTPException.__init__(self, self.description)
+        HTTPException.__init__(self, "数据集(%s)不存在" % id)
+
+
+class LabelException(APIEception):
+    code = 400
+
+    def __init__(self, help_text):
+        HTTPException.__init__(self, help_text)
+
+
+class FileDoesntExistException(APIEception):
+    code = 404
+
+    def __init__(self, filename):
+        HTTPException.__init__(self, "文件(%s)不存在" % filename)
+
+
+class SampleAlreadyExist(APIEception):
+    code = 400
+
+    def __init__(self, filename):
+        HTTPException.__init__(self, "样本(%s)已存在" % filename)

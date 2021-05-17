@@ -4,6 +4,7 @@ flask
 PyJWT
 marshmallow
 marshmallow-oneofschema
+shortuuid
 
 # dev deps
 black
