@@ -41,6 +41,6 @@ def create_app():
 
     @app.errorhandler(ValidationError)
     def handle_validation_exception(e):
-        return {"code": 400, "data": e.data, "errors": e.messages}, 400
+        return {"code": 400, "errors": e.messages}, 400
 
     return app

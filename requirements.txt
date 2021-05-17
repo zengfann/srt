@@ -3,6 +3,7 @@ python-dotenv
 flask
 PyJWT
 marshmallow
+marshmallow-oneofschema
 
 # dev deps
 black
