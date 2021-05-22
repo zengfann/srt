@@ -46,7 +46,7 @@ def upload_files(user):
     id = uuid4()
     filename = str(id) + "." + secure_filename(file.filename)
     file.save(path.join(UPLOAD_FOLDER, filename))
-    return {"message": "上传成功", "filename": filename}
+    return {"message": "上传成功", "filename": filename, "mimetype": file.mimetype}
 
 
 @blueprint.route("/files/<filename>", methods=("GET",))

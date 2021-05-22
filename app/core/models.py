@@ -50,3 +50,4 @@ class Sample(Document):
     checked = BooleanField(required=True)
     file = StringField(required=True, unique=True)
     original_filename = StringField(required=True)
+    mimetype = StringField(required=True)

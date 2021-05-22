@@ -80,6 +80,7 @@ class SampleSerializer(Schema):
     checked = fields.Boolean(dump_only=True)
     file = fields.String(required=True)
     original_filename = fields.String(required=True)
+    mimetype = fields.String(required=True)
 
     @post_load
     def make_sample(self, data, **kwargs):
