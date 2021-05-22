@@ -1,3 +1,13 @@
+def is_number(value):
+    if type(value) is int or type(value) is float:
+        return True
+    try:
+        float(value)
+        return True
+    except ValueError:
+        return False
+
+
 def validate_labels(sample, dataset):
     all_label_ids = set(map(lambda x: x["label_id"], dataset.labels))
     for label_id, value in sample.labels.items():
@@ -18,8 +28,11 @@ def validate_labels(sample, dataset):
                 )
 
         elif label_type == "number":
-            if not (type(value) is int or type(value) is float):
+            if not is_number(value):
                 return False, "标签(%s)应当是数值类型" % label_id
+
+            value = float(value)
+            sample.labels[label_id] = value
 
             if "min_num" in label and value < label["min_num"]:
                 return False, "标签(%s)的值不能小于%f" % (label_id, label["min_num"])

@@ -1,5 +1,6 @@
 from marshmallow import Schema, fields
 from marshmallow.decorators import post_load
+from marshmallow.validate import Length
 from marshmallow_oneofschema import OneOfSchema
 
 from app.auth.serializers import UserSerializer
@@ -17,7 +18,7 @@ class EnumLabelSerializer(Schema):
     )
     label_name = fields.String(required=True)
     description = fields.String(required=True)
-    values = fields.List(fields.String(), required=True)
+    values = fields.List(fields.String(), required=True, validate=Length(min=1))
 
     @post_load
     def make_label(self, data, **kwargs):
@@ -56,7 +57,9 @@ class DatasetSerializer(Schema):
     description = fields.String(required=True)
     date = fields.DateTime()
     creator = fields.Nested(UserSerializer, required=True, dump_only=True)
-    labels = fields.List(fields.Nested(LabelSerializer), required=True)
+    labels = fields.List(
+        fields.Nested(LabelSerializer), required=True, validate=Length(min=1)
+    )
     # 创建时不需要指定管理员
     managers = fields.List(LazyReferenceSerializer(), required=True, dump_only=True)
 
@@ -76,6 +79,7 @@ class SampleSerializer(Schema):
     # 创建时不需要指定是否过审
     checked = fields.Boolean(dump_only=True)
     file = fields.String(required=True)
+    original_filename = fields.String(required=True)
 
     @post_load
     def make_sample(self, data, **kwargs):

@@ -49,3 +49,4 @@ class Sample(Document):
     labels = DictField(required=True)
     checked = BooleanField(required=True)
     file = StringField(required=True, unique=True)
+    original_filename = StringField(required=True)
