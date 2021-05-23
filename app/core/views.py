@@ -21,10 +21,13 @@ from .exceptions import (
     NotOwnerException,
     SampleAlreadyExist,
     SampleDoesntExist,
+    NoLabelException,
+    NotEnumLabelException,
 )
 from .models import Dataset, Sample
 from .serializers import (
     DatasetSerializer,
+    add_enum_value_dto_schema,
     add_manager_dto_schema,
     dataset_schema,
     sample_schema,
@@ -89,6 +92,45 @@ def create_dataset(user):
     dataset.date = datetime.now()
     for label in dataset.labels:
         label["label_id"] = suuid()
+    dataset.save()
+    return dataset_schema.dump(dataset)
+
+
+@blueprint.route(
+    "/datasets/<objectid:dataset_id>/labels/<label_id>",
+    methods=("POST",),
+)
+@with_user(detail=True)
+def add_enum_value(dataset_id, label_id, user):
+    add_enum_value_dto = add_enum_value_dto_schema.load(request.get_json())
+
+    dataset = Dataset.objects.filter(id=dataset_id).first()
+
+    if dataset is None:
+        raise DatasetDoesntExist(dataset_id)
+
+    if dataset.creator.id != user.id:
+        # 不是自己的数据集不能添加管理员
+        raise NotOwnerException
+
+    label = dataset.get_label(label_id)
+    if label is None:
+        # label 不存在
+        raise NoLabelException(label_id)
+
+    if label["type"] != "enum":
+        # 不是枚举类型
+        raise NotEnumLabelException(label_id)
+
+    for i in range(len(dataset.labels)):
+        if dataset.labels[i]["label_id"] == label_id:
+            # 使用 set 避免相同的 value 添加到 values
+            print(list(dataset.labels[i]["values"]))
+            print((add_enum_value_dto["values"]))
+            dataset.labels[i]["values"] = list(
+                set(dataset.labels[i]["values"] + add_enum_value_dto["values"])
+            )
+
     dataset.save()
     return dataset_schema.dump(dataset)
 

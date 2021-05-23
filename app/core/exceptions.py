@@ -44,3 +44,17 @@ class SampleAlreadyExist(APIEception):
 
     def __init__(self, filename):
         HTTPException.__init__(self, "样本(%s)已存在" % filename)
+
+
+class NoLabelException(APIEception):
+    code = 404
+
+    def __init__(self, label_id):
+        HTTPException.__init__(self, "标签(%s)不存在" % label_id)
+
+
+class NotEnumLabelException(APIEception):
+    code = 400
+
+    def __init__(self, label_id):
+        HTTPException.__init__(self, "标签(%s)不是一个枚举类型" % label_id)

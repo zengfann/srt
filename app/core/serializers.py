@@ -87,6 +87,10 @@ class SampleSerializer(Schema):
         return Sample(**data)
 
 
+class AddEnumValueDtoSerializer(Schema):
+    values = fields.List(fields.String(), required=True)
+
+
 class AddManagerDtoSerializer(Schema):
     username = fields.String(required=True)
 
@@ -98,3 +102,4 @@ sample_schema = SampleSerializer()
 samples_schema = SampleSerializer(many=True)
 
 add_manager_dto_schema = AddManagerDtoSerializer()
+add_enum_value_dto_schema = AddEnumValueDtoSerializer()
