@@ -5,6 +5,9 @@ PyJWT
 marshmallow
 marshmallow-oneofschema
 shortuuid
+pytorch
+numpy
+pillow
 
 # dev deps
 black

@@ -29,17 +29,14 @@
     ```sh
     export FLASK_APP=app
     export FLASK_ENV=development
-    flask run
+    flask run dev
     ```
 
     B:在PyCharm中直接新建启动配置即可
 
-5. 创建训练集文件夹 `train_data`文件夹
-    配置如下，在`.env`文件下配置`TRAIN_FOLDER`文件路径
-    需要在srt文件下手动创建如下文件夹
-    `train_data`文件内容：
-    `identify` ：文件为识别病害训练集文件夹(`0`,`1`...为病害种类文件夹)
-    `mask`: 为病斑分割训练集 `gt`:为上级下的手动分割病斑图 `image` 为同级相应的图片集 
+5. 创建模型测试文件夹 `model`文件夹(用于存储测试识别模型)
+   需要在`ml`文件下修改`recognize.py` 中模型的路径
+   `model = torch.load("path", map_location=torch.device("cpu"))`
 
 ## 代码检查（`IMPORTANT`）
 
