@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, json
 from marshmallow.exceptions import ValidationError
 from mongoengine import connect
+from stackprinter import set_excepthook, show
 from werkzeug.exceptions import HTTPException
 
 from app import auth, core
@@ -13,8 +14,23 @@ from app.util.converters import ObjectIDConverter
 # 加载环境变量
 load_dotenv()
 
+# 设置更好的报错
+set_excepthook(style="darkbg2")
+
 # 连接数据库
 connect(host=environ["MONGODB_HOST"])
+
+
+def handle_exception(e):
+    show(style="darkbg2")
+    response = json.jsonify(
+        {
+            "code": 500,
+            "name": "INTERNAL SERVER ERROR",
+        }
+    )
+    response.status_code = 500
+    return response
 
 
 def create_app():
@@ -23,6 +39,7 @@ def create_app():
 
     app.register_blueprint(auth.views.blueprint)
     app.register_blueprint(core.views.blueprint)
+    app.handle_exception = handle_exception
 
     @app.route("/")
     def hello_world():
