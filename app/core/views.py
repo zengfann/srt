@@ -106,9 +106,13 @@ def del_dataset(dataset_id, user):
     删除当前数据集
     """
     dataset = Dataset.objects.filter(id=dataset_id).first()
+    if dataset is None:
+        raise DatasetDoesntExist(id)
     if dataset.can_check(user):
         dataset.delete()
-    return {"message": "删除成功", "deleted_dataset": dataset_schema.dump(dataset)}
+    else:
+        raise NotManagerException
+    return {"message": "删除成功", "deleted_dataset": dataset_schema.dump(dataset)}, 204
 
 
 @blueprint.route(
@@ -292,7 +296,7 @@ def check_sample(dataset_id, sample_id, user):
     return sample_schema.dump(sample)
 
 
-@blueprint.route("/upload", methods=("POST",))
+@blueprint.route("/upload_test_img", methods=("POST",))
 @with_user()
 def upload_test_files(user):
     """
