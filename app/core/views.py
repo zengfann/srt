@@ -20,12 +20,12 @@ from .exceptions import (
     DatasetDoesntExist,
     FileDoesntExistException,
     LabelException,
+    NoLabelException,
+    NotEnumLabelException,
     NotManagerException,
     NotOwnerException,
     SampleAlreadyExist,
     SampleDoesntExist,
-    NoLabelException,
-    NotEnumLabelException,
 )
 from .models import Dataset, Sample
 from .serializers import (
