@@ -1,12 +1,11 @@
 from datetime import datetime
+from io import BytesIO
 from os import getenv, path
 from uuid import uuid4
-from ml import recognize
-from io import BytesIO
-from PIL import Image
 
 from flask import Blueprint, request, send_from_directory
 from mongoengine.errors import NotUniqueError
+from PIL import Image
 from shortuuid import uuid as suuid
 from werkzeug.utils import secure_filename
 
@@ -15,6 +14,7 @@ from app.auth.models import User
 from app.decorators import with_user
 from app.util.labels import validate_labels
 from app.util.utils import file_exist
+from ml import recognize
 
 from .exceptions import (
     DatasetDoesntExist,

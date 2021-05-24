@@ -1,5 +1,7 @@
-import torch
+from os import getenv
+
 import numpy as np
+import torch
 from torchvision import transforms
 
 IMG_HEIGHT = 224
@@ -7,6 +9,8 @@ IMG_WIDTH = 224
 NUM_CHANNELS = 3
 norm_mean = [0.485, 0.456, 0.406]
 norm_std = [0.229, 0.224, 0.225]
+
+MODEL_PATH = getenv("MODEL_PATH")
 
 valid_transform = transforms.Compose(
     [
@@ -17,7 +21,7 @@ valid_transform = transforms.Compose(
 )
 
 
-model = torch.load("D:/code/SRT/srt/model/69.pth", map_location=torch.device("cpu"))
+model = torch.load(MODEL_PATH, map_location=torch.device("cpu"))
 device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 model.to(device)
 

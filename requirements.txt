@@ -5,7 +5,7 @@ PyJWT
 marshmallow
 marshmallow-oneofschema
 shortuuid
-pytorch
+torch
 numpy
 pillow
 
