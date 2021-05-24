@@ -1,6 +1,9 @@
 from datetime import datetime
 from os import getenv, path
 from uuid import uuid4
+from ml import recognize
+from io import BytesIO
+from PIL import Image
 
 from flask import Blueprint, request, send_from_directory
 from mongoengine.errors import NotUniqueError
@@ -96,12 +99,27 @@ def create_dataset(user):
     return dataset_schema.dump(dataset)
 
 
+@blueprint.route("/datasets/<objectid:dataset_id>/del_datasets", methods=("DELETE",))
+@with_user(detail=True)
+def del_dataset(dataset_id, user):
+    """
+    删除当前数据集
+    """
+    dataset = Dataset.objects.filter(id=dataset_id).first()
+    if dataset.can_check(user):
+        dataset.delete()
+    return {"message": "删除成功", "deleted_dataset": dataset_schema.dump(dataset)}
+
+
 @blueprint.route(
     "/datasets/<objectid:dataset_id>/labels/<label_id>",
     methods=("POST",),
 )
 @with_user(detail=True)
 def add_enum_value(dataset_id, label_id, user):
+    """
+    添加标签枚举项
+    """
     add_enum_value_dto = add_enum_value_dto_schema.load(request.get_json())
 
     dataset = Dataset.objects.filter(id=dataset_id).first()
@@ -272,3 +290,16 @@ def check_sample(dataset_id, sample_id, user):
         raise NotManagerException
 
     return sample_schema.dump(sample)
+
+
+@blueprint.route("/upload", methods=("POST",))
+@with_user()
+def upload_test_files(user):
+    """
+    上传测试文件
+    """
+    file = request.files["file"]
+    img_buff = file.read()
+    im = Image.open(BytesIO(img_buff))
+    r = recognize.recognize(im)
+    return {"result": r}
