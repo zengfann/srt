@@ -40,7 +40,7 @@ def signin():
         raise UserNotExists
     if user.password == login_user.password:
         token = jwt.encode({"username": user.username}, JWT_SECRET)
-        return {"message": "登录成功", "access_token": token}
+        return {"message": "登录成功", "access_token": token, "user_id": str(user.id)}
     else:
         raise PasswordIncorrect
 

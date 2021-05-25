@@ -241,6 +241,21 @@ def get_samples(id):
     return {"results": samples_schema.dump(samples)}
 
 
+@blueprint.route("/datasets/<objectid:id>/unchecked_samples", methods=("GET",))
+def get_unchecked_samples(id):
+    """
+    获取未审核样本
+    """
+    dataset = Dataset.objects.filter(id=id).first()
+
+    if dataset is None:
+        raise DatasetDoesntExist(id)
+
+    samples = Sample.objects.filter(checked=False, dataset=dataset)
+
+    return {"results": samples_schema.dump(samples)}
+
+
 @blueprint.route(
     "/datasets/<objectid:dataset_id>/samples/<objectid:sample_id>", methods=("DELETE",)
 )
