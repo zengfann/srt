@@ -61,7 +61,7 @@ class DatasetSerializer(Schema):
         fields.Nested(LabelSerializer), required=True, validate=Length(min=1)
     )
     # 创建时不需要指定管理员
-    managers = fields.List(LazyReferenceSerializer(), required=True, dump_only=True)
+    managers = fields.List(fields.Nested(UserSerializer), required=True, dump_only=True)
 
     @post_load
     def make_dataset(self, data, **kwargs):

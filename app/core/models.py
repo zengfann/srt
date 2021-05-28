@@ -25,7 +25,7 @@ class Dataset(Document):
     date = DateTimeField(required=True)
     creator = ReferenceField(User, required=True)
     labels = ListField(DictField(), required=True)
-    managers = ListField(LazyReferenceField(User), default=[])
+    managers = ListField(ReferenceField(User), default=[])
 
     def can_check(self, user):
         return user.id == self.creator.id or user in self.managers
