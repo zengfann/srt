@@ -227,7 +227,7 @@ def get_samples(id):
 
     samples = Sample.objects.filter(checked=True, dataset=dataset)
 
-    # 目前仅支持枚举筛选
+    # 筛选出所选样本信息
     for label_id in dataset.get_label_ids():
         label_query = request.args.get(label_id)
 
@@ -235,9 +235,20 @@ def get_samples(id):
             continue
 
         label = dataset.get_label(label_id)
-        if label["type"] == "enum":
-            samples = samples.filter(**{f"labels__{label_id}": label_query})
-
+        if label["type"] == ("enum"):
+            samples = samples.filter(
+                **{
+                    f"labels__{label_id}": label_query,
+                }
+            )
+        elif label["type"] == ("number"):
+            arr = []
+            arr = label_query.split("-", 2)
+            low = int(arr[0])
+            high = int(arr[1])
+            samples = samples.filter(
+                **{f"labels__{label_id}__lte": high, f"labels__{label_id}__gte": low}
+            )
     return {"results": samples_schema.dump(samples)}
 
 

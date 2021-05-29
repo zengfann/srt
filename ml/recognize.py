@@ -44,4 +44,5 @@ def recognize(im):
         result = []
         for value, indice in zip(values, indices):
             result.append((indice.item(), LABELS[indice], value.item()))
+        result = result[0:4]
         return result
