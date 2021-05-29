@@ -51,3 +51,39 @@ class Sample(Document):
     file = StringField(required=True, unique=True)
     original_filename = StringField(required=True)
     mimetype = StringField(required=True)
+
+
+class Modelset(Document):
+    """
+    模型仓库
+    """
+
+    name = StringField(required=True)
+    description = StringField(required=True)
+    date = DateTimeField(required=True)
+    creator = ReferenceField(User, required=True)
+    labels = ListField(DictField(), required=True)
+
+    def can_check(self, user):
+        return user.id == self.creator.id
+
+    def get_label(self, label_id):
+        for label in self.labels:
+            if label["label_id"] == label_id:
+                return deepcopy(label)
+        return None
+
+    def get_label_ids(self):
+        return set(map(lambda x: x["label_id"], self.labels))
+
+
+class Model(Document):
+    """
+    模型
+    """
+
+    modelset = LazyReferenceField(Modelset, required=True, reverse_delete_rule=CASCADE)
+    labels = DictField(required=True)
+    file = StringField(required=True, unique=True)
+    original_filename = StringField(required=True)
+    mimetype = StringField(required=True)

@@ -18,6 +18,13 @@ class DatasetDoesntExist(APIEception):
         HTTPException.__init__(self, "数据集(%s)不存在" % id)
 
 
+class ModelsetDoesntExist(APIEception):
+    code = 404
+
+    def __init__(self, id):
+        HTTPException.__init__(self, "模型集(%s)不存在" % id)
+
+
 class SampleDoesntExist(APIEception):
     code = 404
 
@@ -40,6 +47,13 @@ class FileDoesntExistException(APIEception):
 
 
 class SampleAlreadyExist(APIEception):
+    code = 400
+
+    def __init__(self, filename):
+        HTTPException.__init__(self, "样本(%s)已存在" % filename)
+
+
+class ModelAlreadyExist(APIEception):
     code = 400
 
     def __init__(self, filename):

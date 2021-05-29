@@ -20,6 +20,8 @@ from .exceptions import (
     DatasetDoesntExist,
     FileDoesntExistException,
     LabelException,
+    ModelAlreadyExist,
+    ModelsetDoesntExist,
     NoLabelException,
     NotEnumLabelException,
     NotManagerException,
@@ -27,14 +29,17 @@ from .exceptions import (
     SampleAlreadyExist,
     SampleDoesntExist,
 )
-from .models import Dataset, Sample
+from .models import Dataset, Sample, Modelset
 from .serializers import (
     DatasetSerializer,
+    ModelsetSerializer,
     add_enum_value_dto_schema,
     add_manager_dto_schema,
     dataset_schema,
     sample_schema,
     samples_schema,
+    model_schema,
+    modelset_schema,
 )
 
 blueprint = Blueprint("core", __name__)
@@ -320,6 +325,84 @@ def check_sample(dataset_id, sample_id, user):
         raise NotManagerException
 
     return sample_schema.dump(sample)
+
+
+"""
+                        模型管理
+"""
+
+
+@blueprint.route("/modelsets", methods=("POST",))
+@with_user(detail=True)
+def create_modelset(user):
+    """
+    创建模型集
+    """
+    modelset = modelset_schema.load(request.get_json())
+    modelset.creator = user
+    modelset.date = datetime.now()
+    for label in modelset.labels:
+        label["label_id"] = suuid()
+    modelset.save()
+    return modelset_schema.dump(modelset)
+
+
+@blueprint.route("/modelsets", methods=("GET",))
+def get_modelsets():
+    """
+    列出所有模型集
+    """
+    # 隐藏 labels 信息
+    username = request.args.get("user")
+    modelsets = Modelset.objects.exclude(
+        "labels",
+    ).all()
+
+    if username is not None:
+        user = User.objects.filter(username=username).first()
+        if user is not None:
+            modelsets = modelsets.filter(creator=user)
+        else:
+            modelsets = []
+
+    return {
+        "results": ModelsetSerializer(exclude=["labels"], many=True).dump(modelsets)
+    }
+
+
+@blueprint.route("/modelsets/<objectid:modelset_id>/del_modelsets", methods=("DELETE",))
+@with_user(detail=True)
+def del_modelset(modelset_id, user):
+    """
+    删除当前模型集
+    """
+    modelset = Modelset.objects.filter(id=modelset_id).first()
+    if modelset is None:
+        raise ModelsetDoesntExist(id)
+    if modelset.can_check(user):
+        modelset.delete()
+    else:
+        raise NotManagerException
+    return {"message": "删除成功", "deleted_dataset": dataset_schema.dump(modelset)}, 204
+
+
+@blueprint.route("/modelsets/<objectid:id>/models", methods=("POST",))
+@with_user(detail=True)
+def create_model(id, user):
+    """
+    上传模型
+    """
+    modelset = Modelset.objects.filter(id=id).first()
+    print(modelset)
+    if modelset is None:
+        raise ModelsetDoesntExist(id)
+    model = model_schema.load(request.get_json())
+    model.modelset = model
+    try:
+        model.save()
+    except NotUniqueError:
+        raise ModelAlreadyExist(model.file)
+    return model_schema.dump(model)
 
 
 @blueprint.route("/upload_test_img", methods=("POST",))
