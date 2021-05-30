@@ -32,6 +32,13 @@ class SampleDoesntExist(APIEception):
         HTTPException.__init__(self, "样本(%s)不存在" % id)
 
 
+class ModelDoesntExist(APIEception):
+    code = 404
+
+    def __init__(self, id):
+        HTTPException.__init__(self, "模型(%s)不存在" % id)
+
+
 class LabelException(APIEception):
     code = 400
 

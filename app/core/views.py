@@ -21,6 +21,7 @@ from .exceptions import (
     FileDoesntExistException,
     LabelException,
     ModelAlreadyExist,
+    ModelDoesntExist,
     ModelsetDoesntExist,
     NoLabelException,
     NotEnumLabelException,
@@ -29,7 +30,7 @@ from .exceptions import (
     SampleAlreadyExist,
     SampleDoesntExist,
 )
-from .models import Dataset, Sample, Modelset
+from .models import Dataset, Model, Sample, Modelset
 from .serializers import (
     DatasetSerializer,
     ModelsetSerializer,
@@ -39,6 +40,7 @@ from .serializers import (
     sample_schema,
     samples_schema,
     model_schema,
+    models_schema,
     modelset_schema,
 )
 
@@ -247,6 +249,7 @@ def get_samples(id):
                 }
             )
         elif label["type"] == ("number"):
+
             arr = []
             arr = label_query.split("-", 2)
             low = int(arr[0])
@@ -397,12 +400,87 @@ def create_model(id, user):
     if modelset is None:
         raise ModelsetDoesntExist(id)
     model = model_schema.load(request.get_json())
-    model.modelset = model
+    model.modelset = modelset
     try:
         model.save()
     except NotUniqueError:
         raise ModelAlreadyExist(model.file)
     return model_schema.dump(model)
+
+
+@blueprint.route("/modelsets/<objectid:id>", methods=("GET",))
+def get_modelset(id):
+    """
+    查看单个模型集
+    """
+    modelset = Modelset.objects.filter(id=id).first()
+    if modelset is None:
+        raise ModelsetDoesntExist(id)
+    return dataset_schema.dump(modelset)
+
+
+@blueprint.route("/modelsets/<objectid:id>/models", methods=("GET",))
+def get_models(id):
+    """
+    获取模型集模型
+    """
+    modelset = Modelset.objects.filter(id=id).first()
+
+    if modelset is None:
+        raise ModelsetDoesntExist(id)
+
+    models = Model.objects.filter(modelset=modelset)
+
+    # 筛选出所选样本信息
+    for label_id in modelset.get_label_ids():
+        label_query = request.args.get(label_id)
+
+        if label_query is None:
+            continue
+
+        label = modelset.get_label(label_id)
+        if label["type"] == ("enum"):
+            models = models.filter(
+                **{
+                    f"labels__{label_id}": label_query,
+                }
+            )
+        elif label["type"] == ("number"):
+
+            arr = []
+            arr = label_query.split("-", 2)
+            low = int(arr[0])
+            high = int(arr[1])
+            models = models.filter(
+                **{f"labels__{label_id}__lte": high, f"labels__{label_id}__gte": low}
+            )
+    return {"results": models_schema.dump(models)}
+
+
+@blueprint.route(
+    "/modelsets/<objectid:modelset_id>/models/<objectid:model_id>", methods=("DELETE",)
+)
+@with_user(detail=True)
+def delete_model(modelset_id, model_id, user):
+    """
+    删除模型
+    """
+
+    modelset = Modelset.objects.filter(id=modelset_id).first()
+    if modelset is None:
+        raise ModelsetDoesntExist(id)
+    model = Model.objects.filter(id=model_id, modelset=modelset).first()
+
+    if model is None:
+        # 样本不存在
+        raise ModelDoesntExist(model_id)
+
+    if modelset.can_check(user):
+        model.delete()
+    else:
+        raise NotManagerException
+
+    return {"message": "删除成功", "deleted_model": model_schema.dump(model)}
 
 
 @blueprint.route("/upload_test_img", methods=("POST",))
