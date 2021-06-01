@@ -26,7 +26,7 @@ valid_transform = transforms.Compose(
 
 
 model = torch.load(MODEL_PATH, map_location=torch.device("cpu"))
-device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
 model.to(device)
 
 model.eval()

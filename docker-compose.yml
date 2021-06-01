@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo
+    container_name: plant-db
+    volumes:
+      - ./data/db:/data/db
+  api:
+    build: .
+    container_name: plant-server
+    environment:
+      - MONGODB_HOST=mongodb://mongo/srt
+      - JWT_SECRET=04d63553-4db7-4017-b5fd-32870ad71158
+      - UPLOAD_FOLDER=/data/upload
+      - MODEL_PATH=/data/69.pth
+    volumes:
+      - ./data/server:/data
+    ports:
+      - '8000:8000'
+    depends_on:
+      - mongo

@@ -1,7 +1,6 @@
 from os import environ
 from pathlib import Path
 
-from dotenv import load_dotenv
 from flask import Flask, json
 from marshmallow.exceptions import ValidationError
 from mongoengine import connect
@@ -10,9 +9,6 @@ from werkzeug.exceptions import HTTPException
 
 from app import auth, core
 from app.util.converters import ObjectIDConverter
-
-# 加载环境变量
-load_dotenv()
 
 # 设置更好的报错
 set_excepthook(style="darkbg2")

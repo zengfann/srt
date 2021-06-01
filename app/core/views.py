@@ -30,18 +30,18 @@ from .exceptions import (
     SampleAlreadyExist,
     SampleDoesntExist,
 )
-from .models import Dataset, Model, Sample, Modelset
+from .models import Dataset, Model, Modelset, Sample
 from .serializers import (
     DatasetSerializer,
     ModelsetSerializer,
     add_enum_value_dto_schema,
     add_manager_dto_schema,
     dataset_schema,
-    sample_schema,
-    samples_schema,
     model_schema,
     models_schema,
     modelset_schema,
+    sample_schema,
+    samples_schema,
 )
 
 blueprint = Blueprint("core", __name__)

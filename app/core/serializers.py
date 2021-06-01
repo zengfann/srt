@@ -4,7 +4,7 @@ from marshmallow.validate import Length
 from marshmallow_oneofschema import OneOfSchema
 
 from app.auth.serializers import UserSerializer
-from app.core.models import Dataset, Sample, Modelset, Model
+from app.core.models import Dataset, Model, Modelset, Sample
 
 
 class LazyReferenceSerializer(fields.Field):
