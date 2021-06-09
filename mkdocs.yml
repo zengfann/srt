@@ -1,0 +1,18 @@
+site_name: SRT 项目文档
+site_url: https://example.com/
+repo_url: https://github.com/zengfann/srt
+repo_name: zengfann/srt
+theme:
+  name: material
+  language: zh
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+nav:
+  - 介绍: index.md
+  - 部署:
+    - deployment/docker.md
+    - deployment/backend.md
+    - deployment/frontend.md
+    - deployment/nginx.md

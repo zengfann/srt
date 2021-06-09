@@ -17,3 +17,4 @@ flake8
 pep8-naming
 pre-commit
 stackprinter
+mkdocs-material
