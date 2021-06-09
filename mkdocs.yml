@@ -17,3 +17,4 @@ nav:
     - deployment/backend.md
     - deployment/frontend.md
     - deployment/nginx.md
+  - 数据库设计: database.md
