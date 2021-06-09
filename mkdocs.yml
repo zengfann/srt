@@ -1,5 +1,6 @@
 site_name: SRT 项目文档
-site_url: https://example.com/
+site_url: https://zengfann.github.io/srt/
+edit_uri: ""
 repo_url: https://github.com/zengfann/srt
 repo_name: zengfann/srt
 theme:

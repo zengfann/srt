@@ -26,7 +26,7 @@ server {
 }
 ```
 
-刷行 nginx 服务：
+刷新 nginx 服务：
 
 ```sh
 nginx -s reload
