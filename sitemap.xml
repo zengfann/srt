@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://zengfann.github.io/srt/</loc>
+         <lastmod>2022-05-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://zengfann.github.io/srt/database/</loc>
+         <lastmod>2022-05-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://zengfann.github.io/srt/deployment/backend/</loc>
+         <lastmod>2022-05-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://zengfann.github.io/srt/deployment/docker/</loc>
+         <lastmod>2022-05-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://zengfann.github.io/srt/deployment/frontend/</loc>
+         <lastmod>2022-05-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://zengfann.github.io/srt/deployment/nginx/</loc>
+         <lastmod>2022-05-24</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
