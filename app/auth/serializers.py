@@ -12,6 +12,7 @@ class UserSerializer(Schema):
         ),
     )
     password = fields.Str(required=True, load_only=True)
+    email = fields.Email(required=True)
 
     @post_load
     def make_user(self, data, **kwargs):

@@ -17,3 +17,7 @@ class PasswordIncorrect(APIEception):
 
 class UnauthorizedUser(Unauthorized):
     description = "没有合法的用户权限"
+
+
+class NotAdmin(Unauthorized):
+    description = "您不是管理员"

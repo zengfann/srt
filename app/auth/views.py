@@ -6,9 +6,9 @@ from mongoengine.errors import DoesNotExist, NotUniqueError
 
 from app.decorators import with_user
 
-from .exceptions import PasswordIncorrect, UserAlreadyExists, UserNotExists
+from .exceptions import PasswordIncorrect, UserAlreadyExists, UserNotExists, NotAdmin
 from .models import User
-from .serializers import user_schema
+from .serializers import user_schema, users_schema
 
 blueprint = Blueprint("auth", __name__)
 
@@ -32,7 +32,7 @@ def signin():
     """
     login_user = user_schema.load(
         request.get_json(),
-        partial=("user_type",),
+        partial=("user_type", "email"),
     )
     try:
         user = User.objects.get(username=login_user.username)
@@ -52,3 +52,47 @@ def get_current_user(user):
     获取当前登录用户
     """
     return user_schema.dump(user)
+
+
+@blueprint.route("/all_users", methods=("GET",))
+def get_all_users():
+    """
+    获取所有用户
+    """
+    return {"results": users_schema.dump(User.objects)}
+
+
+@blueprint.route("/change_user/<username>", methods=("POST",))
+def change_user(username):
+    """
+    更改用户信息
+    """
+    changedUser = user_schema.load(
+        request.get_json(),
+        partial=("password",),
+    )
+    try:
+        user = User.objects.get(username=username)
+    except DoesNotExist:
+        raise UserNotExists
+    user.username = changedUser.username
+    user.email = changedUser.email
+    try:
+        user.save()
+    except NotUniqueError:
+        raise UserAlreadyExists
+    return user_schema.dump(user)
+
+
+@blueprint.route("/users/<username>", methods=("DELETE",))
+@with_user(detail=True)
+def delete_user(username, user):
+    if user.username == "admin":
+        try:
+            user = User.objects.get(username=username)
+        except DoesNotExist:
+            return None
+        user.delete()
+        return None
+    else:
+        raise NotAdmin
